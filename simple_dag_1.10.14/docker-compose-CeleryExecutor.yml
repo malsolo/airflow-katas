@@ -10,10 +10,28 @@ services:
             - POSTGRES_USER=airflow
             - POSTGRES_PASSWORD=airflow
             - POSTGRES_DB=airflow
-        # Uncomment these lines to persist data on the local filesystem.
-        #     - PGDATA=/var/lib/postgresql/data/pgdata
-        # volumes:
-        #     - ./mnt/postgres:/var/lib/postgresql/data/pgdata
+            - PGDATA=/var/lib/postgresql/data
+        volumes:
+            - postgres-db-volume:/var/lib/postgresql/data
+
+    mssql:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        ports:
+            - 1433:1433
+        environment: 
+            - ACCEPT_EULA=Y
+            - SA_PASSWORD=YourStrong@Passw0rd
+        user: root
+        volumes:
+            - mssql-db-volume:/var/opt/mssql/data
+            - ./docker/mssql/scripts:/var/opt/mssql/scripts
+        command: sh -c ' chmod +x /var/opt/mssql/scripts/entrypoint.sh; /var/opt/mssql/scripts/entrypoint.sh & /opt/mssql/bin/sqlservr;'
+        healthcheck:
+            test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "YourStrong@Passw0rd" -Q "SELECT 1" -b -o /dev/null
+            interval: 10s
+            timeout: 3s
+            retries: 10
+            start_period: 10s      
 
     webserver:
         build: ./docker/airflow
@@ -21,6 +39,7 @@ services:
         depends_on:
             - postgres
             - redis
+            - mssql
         environment:
             - LOAD_EX=n
             - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
@@ -93,3 +112,8 @@ services:
             - POSTGRES_DB=airflow
             - REDIS_PASSWORD=redispass
         command: worker
+
+volumes:
+    postgres-db-volume:
+    mssql-db-volume:
+          
