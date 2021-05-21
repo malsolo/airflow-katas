@@ -39,3 +39,30 @@ $ export CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constr
 # For example: https://raw.githubusercontent.com/apache/airflow/constraints-2.0.2/constraints-3.6.txt
 $ pip install "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
 
+5. Add MS Sql Server
+
+Modify the docker compose files.
+
+Run the containers
+
+Try with the console:
+
+$ docker ps
+CONTAINER ID   IMAGE                                        COMMAND                  CREATED         STATUS                   PORTS                                                           NAMES
+...
+ba3333c354bb   mcr.microsoft.com/mssql/server:2019-latest   "/opt/mssql/bin/perm…"   3 minutes ago    Up 34 seconds (healthy)            0.0.0.0:1433->1433/tcp, :::1433->1433/tcp             simple_dag_mssql_1
+$ 
+
+$ docker exec -it simple_dag_mssql_1 /bin/bash
+root@ba3333c354bb:/# /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "YourStrong@Passw0rd"
+1> USE TestDatabase
+2> SELECT * FROM MyTable;
+3> GO
+Changed database context to 'TestDatabase'.
+...
+
+(18 rows affected)
+1> exit
+root@ba3333c354bb:/# exit
+exit
+(venv) $
