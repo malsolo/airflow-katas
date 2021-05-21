@@ -4,8 +4,6 @@ __pycache__/
 *$py.class
 
 # Airflow working directories
-simple_dag/dags/*
-!simple_dag/dags/empty
 simple_dag/logs/*
 !simple_dag/logs/empty
 simple_dag/plugins/*
