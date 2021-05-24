@@ -88,7 +88,7 @@
         restart: always
 
       mssql:
-        image: mcr.microsoft.com/mssql/server:2019-latest
+        image: mcr.microsoft.com/mssql/server:2017-latest
         ports:
             - 1433:1433
         environment: 
@@ -96,7 +96,7 @@
             - SA_PASSWORD=YourStrong@Passw0rd
         user: root
         volumes:
-            - mssql-db-volume:/var/opt/mssql/data
+            - mssql-17-db-volume:/var/opt/mssql/data
             - ./docker/mssql/scripts:/var/opt/mssql/scripts
         command: sh -c ' chmod +x /var/opt/mssql/scripts/entrypoint.sh; /var/opt/mssql/scripts/entrypoint.sh & /opt/mssql/bin/sqlservr;'
         healthcheck:
@@ -153,4 +153,4 @@
     
     volumes:
       postgres-db-volume:
-      mssql-db-volume:
+      mssql-17-db-volume:

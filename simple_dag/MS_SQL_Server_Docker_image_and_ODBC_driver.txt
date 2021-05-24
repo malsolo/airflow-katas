@@ -1,0 +1,58 @@
+-----------------
+
+From:
+	https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-docker-container-deployment?view=sql-server-ver15&pivots=cs1-bash
+
+We already did:
+	https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker?view=sql-server-ver15&preserve-view=true&pivots=cs1-bash
+
+Now let's try:
+	https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker?view=sql-server-2017&preserve-view=true&pivots=cs1-bash
+
+$ docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=YourStrong@Passw0rd" \
+   -p 1433:1433 --name sql17 -h sql17 \
+   -d \
+   mcr.microsoft.com/mssql/server:2017-latest
+
+ $ docker exec -it sql17 /opt/mssql-tools/bin/sqlcmd \
+   -S localhost -U SA -P "YourStrong@Passw0rd" \
+   -Q 'ALTER LOGIN SA WITH PASSWORD="YourNewStrong@Passw0rd"'
+
+ $ docker exec -it sql17 "bash"
+
+ # /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "YourNewStrong@Passw0rd"
+ 1> CREATE DATABASE TestDB
+ 2> SELECT Name from sys.Databases
+ 3> GO
+
+-------------------
+
+Then, we'll need the ODBC driver:
+	https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15#ubuntu17
+
+$ sudo su
+$ curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+
+#Download appropriate package for the OS version
+#Choose only ONE of the following, corresponding to your OS version
+
+#Ubuntu 20.04
+$ curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+
+$ exit
+$ sudo apt-get update
+$ sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17
+# optional: for bcp and sqlcmd
+$ sudo ACCEPT_EULA=Y apt-get install -y mssql-tools
+$ echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
+$ source ~/.bashrc
+# optional: for unixODBC development headers
+sudo apt-get install -y unixodbc-dev
+
+-----------------
+
+Finally, we can follow:
+	https://docs.microsoft.com/en-us/sql/connect/python/pyodbc/python-sql-driver-pyodbc?view=sql-server-ver15
+
+		Specially: 
+			https://docs.microsoft.com/en-us/sql/connect/python/pyodbc/step-3-proof-of-concept-connecting-to-sql-using-pyodbc?view=sql-server-ver15
