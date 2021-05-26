@@ -6,7 +6,7 @@ from tables.MyTable import MyTable
 
 engine = create_engine(
     "mssql+pyodbc://SA:YourStrong@Passw0rd@localhost:1433/TestDatabase"
-    "?driver=ODBC+Driver+17+for+SQL+Server"
+    "?driver=ODBC+Driver+17+for+SQL+Server", echo = True
 )
 
 Session = sessionmaker(bind=engine)
